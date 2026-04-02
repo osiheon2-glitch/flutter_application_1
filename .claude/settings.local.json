@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(flutter analyze:*)",
+      "Bash(dart analyze:*)",
+      "Bash(flutter run:*)",
+      "Bash(start:*)",
+      "Bash(flutter pub:*)",
+      "Bash(echo $PUB_CACHE)",
+      "Read(//c/osh/flutter_application_1/**)",
+      "Bash(gh auth:*)",
+      "Bash(flutter build:*)",
+      "Bash(git init:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
+    ]
+  }
+}
