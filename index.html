@@ -1,38 +1,229 @@
 <!DOCTYPE html>
-<html>
+<html lang="ko">
 <head>
-  <!--
-    If you are serving your web app in a path other than the root, change the
-    href value below to reflect the base path you are serving from.
-
-    The path provided below has to start and end with a slash "/" in order for
-    it to work correctly.
-
-    For more details:
-    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
-
-    This is a placeholder for base href that will be replaced by the value of
-    the `--base-href` argument provided to `flutter build`.
-  -->
-  <base href="/">
-
   <meta charset="UTF-8">
-  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description" content="A new Flutter project.">
-
-  <!-- iOS meta tags & icons -->
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="flutter_application_1">
-  <link rel="apple-touch-icon" href="icons/Icon-192.png">
-
-  <!-- Favicon -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FocusBody AI - 스마트 건강 관리</title>
   <link rel="icon" type="image/png" href="favicon.png"/>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
-  <title>flutter_application_1</title>
-  <link rel="manifest" href="manifest.json">
+    body {
+      font-family: 'Segoe UI', -apple-system, sans-serif;
+      background: #0a0a0a;
+      color: #fff;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 40px 20px;
+      position: relative;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -50%; left: -50%;
+      width: 200%; height: 200%;
+      background: radial-gradient(circle at 50% 50%, rgba(99,102,241,0.15) 0%, transparent 50%);
+      animation: pulse 6s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 0.5; }
+      50% { transform: scale(1.1); opacity: 1; }
+    }
+
+    .hero-content { position: relative; z-index: 1; max-width: 700px; }
+
+    .app-icon {
+      width: 120px; height: 120px;
+      border-radius: 28px;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 32px;
+      box-shadow: 0 20px 60px rgba(99,102,241,0.4);
+      font-size: 36px; font-weight: 800; letter-spacing: -1px;
+    }
+
+    h1 {
+      font-size: 3.5rem; font-weight: 800; margin-bottom: 16px;
+      background: linear-gradient(135deg, #fff 0%, #a5b4fc 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+
+    .tagline { font-size: 1.25rem; color: #94a3b8; margin-bottom: 48px; line-height: 1.6; }
+
+    .download-btn {
+      display: inline-flex; align-items: center; gap: 12px;
+      padding: 18px 40px;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      color: #fff; text-decoration: none; border-radius: 16px;
+      font-size: 1.2rem; font-weight: 700;
+      transition: all 0.3s ease;
+      box-shadow: 0 8px 32px rgba(99,102,241,0.4);
+    }
+
+    .download-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 48px rgba(99,102,241,0.6);
+    }
+
+    .download-btn svg { width: 24px; height: 24px; fill: currentColor; }
+
+    .download-info { margin-top: 16px; color: #64748b; font-size: 0.9rem; }
+
+    .features { padding: 80px 20px; max-width: 1000px; margin: 0 auto; }
+    .features h2 { text-align: center; font-size: 2rem; margin-bottom: 48px; color: #e2e8f0; }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+    }
+
+    .feature-card {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 20px; padding: 32px;
+      transition: all 0.3s ease;
+    }
+
+    .feature-card:hover {
+      background: rgba(255,255,255,0.08);
+      transform: translateY(-4px);
+      border-color: rgba(99,102,241,0.3);
+    }
+
+    .feature-icon { font-size: 2.5rem; margin-bottom: 16px; }
+    .feature-card h3 { font-size: 1.2rem; margin-bottom: 8px; color: #e2e8f0; }
+    .feature-card p { color: #94a3b8; line-height: 1.6; font-size: 0.95rem; }
+
+    .install { padding: 80px 20px; max-width: 700px; margin: 0 auto; }
+    .install h2 { text-align: center; font-size: 2rem; margin-bottom: 48px; color: #e2e8f0; }
+
+    .steps { display: flex; flex-direction: column; gap: 24px; }
+
+    .step {
+      display: flex; align-items: flex-start; gap: 20px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 16px; padding: 24px;
+    }
+
+    .step-num {
+      flex-shrink: 0; width: 40px; height: 40px; border-radius: 12px;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 1.1rem;
+    }
+
+    .step-text h4 { margin-bottom: 4px; color: #e2e8f0; }
+    .step-text p { color: #94a3b8; font-size: 0.9rem; line-height: 1.5; }
+
+    footer {
+      text-align: center; padding: 40px 20px;
+      color: #475569; font-size: 0.85rem;
+      border-top: 1px solid rgba(255,255,255,0.05);
+    }
+
+    @media (max-width: 600px) {
+      h1 { font-size: 2.2rem; }
+      .tagline { font-size: 1rem; }
+      .download-btn { padding: 16px 32px; font-size: 1rem; }
+    }
+  </style>
 </head>
 <body>
-  <script src="flutter_bootstrap.js" async></script>
+
+  <section class="hero">
+    <div class="hero-content">
+      <div class="app-icon">FB</div>
+      <h1>FocusBody AI</h1>
+      <p class="tagline">
+        AI 기반 스마트 건강 관리 앱<br>
+        피로도 분석, 맞춤 루틴 추천, 타이머까지 한 번에
+      </p>
+      <a href="https://github.com/osiheon2-glitch/flutter_application_1/releases/download/v1.0.0/app-release.apk" class="download-btn">
+        <svg viewBox="0 0 24 24"><path d="M13 5v6h1.17L12 13.17 9.83 11H11V5h2m2-2H9v6H5l7 7 7-7h-4V3zm4 15H5v2h14v-2z"/></svg>
+        Android APK 다운로드
+      </a>
+      <p class="download-info">v1.0.0 | Android 5.0+ | 49MB</p>
+    </div>
+  </section>
+
+  <section class="features">
+    <h2>주요 기능</h2>
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="feature-icon">&#x1F9E0;</div>
+        <h3>AI 피로도 분석</h3>
+        <p>수면, 스트레스, 운동량 등을 입력하면 AI가 실시간으로 피로도를 분석하고 상태를 알려줍니다.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">&#x1F4CA;</div>
+        <h3>피로도 그래프</h3>
+        <p>하루 동안의 피로도 변화를 차트로 확인하고, 건강 패턴을 파악할 수 있습니다.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">&#x23F1;&#xFE0F;</div>
+        <h3>맞춤 타이머</h3>
+        <p>현재 상태에 맞는 휴식/집중 시간을 AI가 추천하고, 타이머로 관리할 수 있습니다.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">&#x1F4DD;</div>
+        <h3>일일 기록 &amp; 목표</h3>
+        <p>매일의 건강 상태를 기록하고, 목표를 설정하여 꾸준히 관리할 수 있습니다.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">&#x1F514;</div>
+        <h3>스마트 알림</h3>
+        <p>AI가 상태를 판단하여 적절한 타이밍에 맞춤 건강 알림을 보내줍니다.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">&#x1F4A1;</div>
+        <h3>AI 조언</h3>
+        <p>현재 컨디션에 맞는 실질적인 건강 조언을 AI가 실시간으로 제공합니다.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="install">
+    <h2>설치 방법</h2>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-text">
+          <h4>APK 다운로드</h4>
+          <p>위 다운로드 버튼을 눌러 APK 파일을 받으세요.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-text">
+          <h4>출처를 알 수 없는 앱 허용</h4>
+          <p>설정 > 보안 > '출처를 알 수 없는 앱 설치'를 허용해 주세요.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-text">
+          <h4>설치 및 실행</h4>
+          <p>다운로드한 APK 파일을 열어 설치하고, 앱을 실행하세요!</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    &copy; 2026 FocusBody AI. All rights reserved.
+  </footer>
+
 </body>
 </html>
