@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'dart:async';
 import 'dart:convert';
 
@@ -27,6 +28,7 @@ Future<void> showNotification(String title, String body) async {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await MobileAds.instance.initialize();
   await initNotifications();
   runApp(MyApp());
 }
@@ -129,6 +131,13 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   int adCount = 0;
 
+  // 배너 광고
+  BannerAd? _bannerAd;
+  bool _isBannerLoaded = false;
+
+  // 전면 광고
+  InterstitialAd? _interstitialAd;
+
   int totalTime = 0; // 타이머 전체 시간 (초)
   int currentTime = 0; // 타이머 남은 시간 (초)
   Timer? timer;
@@ -162,11 +171,69 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     loadData();
     loadDailyLogs();
     loadGoals();
+    _loadBannerAd();
+    _loadInterstitialAd();
+  }
+
+  void _loadInterstitialAd() {
+    InterstitialAd.load(
+      // 테스트 광고 ID - 배포 시 실제 ID로 교체하세요
+      adUnitId: 'ca-app-pub-3940256099942544/1033173712',
+      request: const AdRequest(),
+      adLoadCallback: InterstitialAdLoadCallback(
+        onAdLoaded: (ad) {
+          _interstitialAd = ad;
+          _interstitialAd!.fullScreenContentCallback = FullScreenContentCallback(
+            onAdDismissedFullScreenContent: (ad) {
+              ad.dispose();
+              _loadInterstitialAd(); // 다음 광고 미리 로드
+            },
+            onAdFailedToShowFullScreenContent: (ad, error) {
+              ad.dispose();
+              _loadInterstitialAd();
+            },
+          );
+        },
+        onAdFailedToLoad: (error) {
+          _interstitialAd = null;
+        },
+      ),
+    );
+  }
+
+  void _showInterstitialAd() {
+    if (_interstitialAd != null) {
+      _interstitialAd!.show();
+      _interstitialAd = null;
+    }
+  }
+
+  void _loadBannerAd() {
+    _bannerAd = BannerAd(
+      // 테스트 광고 ID - 배포 시 실제 광고 단위 ID로 교체하세요
+      adUnitId: 'ca-app-pub-3940256099942544/6300978111',
+      size: AdSize.banner,
+      request: const AdRequest(),
+      listener: BannerAdListener(
+        onAdLoaded: (ad) {
+          setState(() {
+            _isBannerLoaded = true;
+          });
+        },
+        onAdFailedToLoad: (ad, error) {
+          ad.dispose();
+          _bannerAd = null;
+          _isBannerLoaded = false;
+        },
+      ),
+    )..load();
   }
 
   @override
   void dispose() {
     timer?.cancel();
+    _bannerAd?.dispose();
+    _interstitialAd?.dispose();
     _glowController.dispose();
     _colorController.dispose();
     super.dispose();
@@ -868,6 +935,12 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       "피로도: ${fatigue.toStringAsFixed(1)} - $statusText",
     );
 
+    // 3회마다 전면 광고 표시
+    adCount++;
+    if (adCount % 3 == 0) {
+      _showInterstitialAd();
+    }
+
     saveData();
     setState(() {});
   }
@@ -1116,6 +1189,16 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
     return Scaffold(
       appBar: AppBar(title: Text("안녕 $userName 👋")),
+
+      bottomNavigationBar: _isBannerLoaded && _bannerAd != null
+          ? SafeArea(
+              child: SizedBox(
+                width: _bannerAd!.size.width.toDouble(),
+                height: _bannerAd!.size.height.toDouble(),
+                child: AdWidget(ad: _bannerAd!),
+              ),
+            )
+          : null,
 
       body: SingleChildScrollView(
         padding: EdgeInsets.all(20),
