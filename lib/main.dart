@@ -1342,7 +1342,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 );
               },
             ),
-
             SizedBox(height: 20),
 
             // AI 추천 카드
